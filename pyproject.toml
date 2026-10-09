@@ -2,8 +2,13 @@
 requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
+# Fork note: the file-based dynamic version (django_filters.__version__)
+# was replaced with a static version below so tags, checkouts, and sdist
+# builds can never silently disagree about the fork version.
+
 [project]
-name = "django-filter"
+name = "filter-drf"
+version = "24.2+epic.1"
 authors = [{name = "Alex Gaynor", email = "alex.gaynor@gmail.com"}]
 maintainers = [{name = "Carlton Gibson", email = "carlton.gibson@noumenal.es"}]
 license = {text = "BSD"}
@@ -28,7 +33,6 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = ["Django>=4.2"]
-dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/carltongibson/django-filter/tree/main"

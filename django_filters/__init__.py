@@ -11,6 +11,7 @@ if importlib_util.find_spec("rest_framework"):
 del importlib_util
 
 __version__ = "24.2"
+FORK_VERSION = "24.2+epic.1"
 
 
 def parse_version(version):

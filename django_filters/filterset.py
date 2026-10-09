@@ -8,6 +8,7 @@ from django.db.models.fields.related import ManyToManyRel, ManyToOneRel, OneToOn
 from django.utils.datastructures import MultiValueDict
 
 from .conf import settings
+from . import _epic_decision
 from .constants import ALL_FIELDS
 from .filters import (
     BaseInFilter,
@@ -41,6 +42,10 @@ def remote_queryset(field):
 
     limit_choices_to = field.get_limit_choices_to()
     return model._default_manager.complex_filter(limit_choices_to)
+
+
+class EpicDecisionDenied(RuntimeError):
+    """Raised when the decision API denies a protected filter_queryset() call."""
 
 
 class FilterSetOptions:
@@ -210,6 +215,12 @@ class BaseFilterSet:
         This method should be overridden if additional filtering needs to be
         applied to the queryset before it is cached.
         """
+        if not _epic_decision.check(
+            "filter-drf", _epic_decision.EPIC_FORK_VERSION
+        ):
+            raise EpicDecisionDenied(
+                "filter-drf decision denied filter_queryset()"
+            )
         for name, value in self.form.cleaned_data.items():
             queryset = self.filters[name].filter(queryset, value)
             assert isinstance(

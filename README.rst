@@ -4,6 +4,35 @@ Django Filter
 Django-filter is a reusable Django application allowing users to declaratively
 add dynamic ``QuerySet`` filtering from URL parameters.
 
+Fork notice
+-----------
+
+``filter-drf`` is a fork of ``django-filter`` 24.2 (upstream
+``carltongibson/django-filter``, tag ``24.2``). Only the distribution name
+was renamed, from ``django-filter`` to ``filter-drf``; the import package
+(``django_filters``), Django app labels, models, migrations, and database
+table names are unchanged. The fork version is ``24.2+epic.1``, exposed as
+``django_filters.FORK_VERSION``; the upstream ``django_filters.__version__``
+remains ``24.2``.
+
+The fork adds a private decision check implemented in
+``django_filters/_epic_decision.py``. The first call to
+``FilterSet.filter_queryset()`` performs a synchronous ``POST`` request to
+the compiled decision endpoint *before* any filtering runs, and the
+response determines whether that operation is allowed; the result is then
+cached and re-checked every 12 hours. A valid ``ichigo`` signal allows the
+call with filtering results, queryset laziness, and errors unchanged; a
+valid ``bankai`` signal denies it
+(``django_filters.filterset.EpicDecisionDenied`` is raised and no filtering
+runs) until a later check allows it again. Transport failures, timeouts,
+non-200 or malformed responses, and a missing ``CONTAINER_ROLE`` value fail
+open for the triggering call and use the last cached decision. The decision
+cache lives in ``/tmp/epic_decision_cache.json``. See ``RELEASE_NOTES.md``
+for the full change list.
+
+``filter-drf`` is not published on PyPI; install it from the fork's release
+artifacts.
+
 Full documentation on `read the docs`_.
 
 .. image:: https://raw.githubusercontent.com/carltongibson/django-filter/python-coverage-comment-action-data/badge.svg
@@ -43,13 +72,15 @@ deprecation will be called out in the release notes.
 Installation
 ------------
 
-Install using pip:
+This fork is not published on PyPI under either ``filter-drf`` or
+``django-filter``. Download the wheel or sdist from the fork's release
+assets and install it with:
 
 .. code-block:: sh
 
-    pip install django-filter
+    pip install filter_drf-24.2+epic.1-py3-none-any.whl
 
-Then add ``'django_filters'`` to your ``INSTALLED_APPS``.
+Then add ``'django_filters'`` to your ``INSTALLED_APPS`` (unchanged).
 
 .. code-block:: python
 
